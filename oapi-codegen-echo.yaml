@@ -1,0 +1,6 @@
+package: openapi
+output: ./pkg/openapi/landmarks.gen.go
+generate:
+  models: false
+  echo-server: true
+  embedded-spec: true # これを入れるとリクエストをValidateできる

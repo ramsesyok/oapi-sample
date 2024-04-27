@@ -1,0 +1,469 @@
+openapi: '3.0.2'
+info:
+  title: Landmarks API - 地点登録API 
+  version: '1.0'
+servers:
+  - url: http://localhost:8080
+paths:
+  /landmarks:
+    get:
+      summary: GetLandmarks 登録地点の一覧を返します.
+      operationId: GetLandmarks
+      parameters:
+        - name: page
+          in: query
+          description: ページ番号
+          required: true
+          schema:
+            type: integer
+          example: 1
+        - name: perPage
+          in: query
+          description: ページあたりのデータ数
+          required: true
+          schema:
+            type: integer
+          example: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Landmarks"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: PostLandmarks 新しい地点を登録します.
+      operationId: PostLandmarks
+      requestBody:
+        description: 登録する地点情報
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Landmark"
+        required: true
+      responses:
+        '200':
+          $ref: "#/components/responses/Created"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '404': # 本来は発生しないが、各種動作確認用
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /landmarks/{id}:
+    parameters:
+      - name: id
+        description: ランドマーク識別番号
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+    get:
+      summary: GetLandmarksID 指定された地点データを取得します.
+      operationId: GetLandmarksID
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Landmark"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: DeleteLandmarksID 指定された地点データを削除します.
+      operationId: DeleteLandmarksID
+      responses:
+        '200':
+          $ref: "#/components/responses/Deleted"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: PutLandmarksID 指定地点更新 指定された地点データを更新します.
+      operationId: PutLandmarksID
+      requestBody:
+        description: 更新する地点情報
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Landmark"
+        required: true
+      responses:
+        '200':
+          $ref: "#/components/responses/Updated"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /landmarks/_search:
+    post:
+      summary: PostLandmarksSearch 検索条件を指定して検索します.
+      operationId: PostLandmarksSearch
+      requestBody:
+        description: 登録する地点情報
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationSearchQuery"
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Landmarks"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  schemas:
+    Landmark:
+      type: object
+      description: 地点情報
+      properties:
+        id:
+          type: integer
+          description: 地点識別番号
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            gorm: primarykey
+          example: 1
+          readOnly: true
+        name:
+          type: string
+          description: 地点名称
+          x-oapi-codegen-extra-tags:
+            gorm: unique
+          example: 東京タワー
+        description:
+          type: string
+          description: 地点概要
+          example: 東京都港区芝公園にある総合電波塔で、正式名称は日本電波塔である。
+        latitude:
+          type: number
+          format: double
+          description: 緯度[deg]
+          example: 35.6586193045004
+        longitude:
+          type: number
+          format: double
+          description: 経度[deg]
+          example: 139.7454050822132
+        altitude:
+          type: number
+          format: float
+          description: 高度[m]
+          example: 333.0
+      required:
+        - name
+        - description
+        - latitude
+        - longitude
+        - altitude
+    Landmarks:
+      type: object
+      description: 地点情報一覧
+      properties:
+        total:
+          type: integer
+          description: データ総数
+        count:
+          type: integer
+          description: データ数
+        items:
+          type: array
+          description: データ一覧
+          items: 
+            $ref: "#/components/schemas/Landmark"
+      required:
+        - total
+        - count
+        - items
+      example:
+        total: 4
+        count: 2
+        items:
+          - id: 1
+            name: 東京タワー
+            description: 東京都港区芝公園にある総合電波塔で、正式名称は日本電波塔である。
+            latitude: 35.6586193045004
+            longitude: 139.7454050822132
+            altitude: 333.0
+          - id: 2
+            name: 東京タワー
+            description: 東京都庁舎は、東京都新宿区西新宿に所在する東京都庁の庁舎である。
+            latitude: 35.689489150649095 
+            longitude: 139.69168760538773
+            altitude: 243.0
+    LocationSearchQuery:
+      type: object
+      description: 地点情報一覧
+      properties:
+        sort:
+          $ref: "#/components/schemas/SortField"
+          description: ソート情報
+        filter:
+          $ref: "#/components/schemas/FilterField"
+          description: データ数
+        page:
+          type: integer
+          description: ページ番号
+        perPage:
+          type: integer
+          description: 取得データ数
+      required:
+        - page
+        - perPage
+    SortField:
+      type: object
+      description: ソート情報
+      properties:
+        field:
+          type: string
+        type:
+          type: string
+          description: ソート方向
+          enum:
+            - asc
+            - desc
+          x-enum-varnames:
+              - SortAscend
+              - SortDescend
+      required:
+        - field
+        - type
+    FilterField:
+      type: object
+      description: フィルタ情報
+      properties:
+        field:
+          type: string
+        value:
+          type: string
+        type:
+          type: string
+          description: 検索方法
+          enum:
+            - extract
+            - partial
+            - prefix
+            - suffix
+          x-enum-varnames:
+            - ExtractMatch
+            - PartialMatch
+            - PrefixMach
+            - SuffixMatch
+      required:
+        - field
+        - value
+        - type
+  responses:
+    Success:
+      description: 成功時レスポンス
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Success
+            properties:
+              requestId:
+                type: string
+                description: リクエスト識別子
+                example: O5g0Av2vOx9Hz7tZ
+                x-go-name: RequestID
+              messageId:
+                type: string
+                description: メッセージ識別子.言語ファイルのキーと同様
+                example: "OperationId.404.1.1"
+                x-go-name: MessageID
+              arguments:
+                type: array
+                description: メッセージ引数
+                items:
+                  type: object
+                  additionalProperties: true
+            required:
+              - requestId
+              - messageId
+              - arguments
+    Created:
+      description: リソース生成時レスポンス
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Created
+            properties:
+              requestId:
+                type: string
+                description: リクエスト識別子
+                example: O5g0Av2vOx9Hz7tZ
+                x-go-name: RequestID
+              messageId:
+                type: string
+                description: メッセージ識別子.言語ファイルのキーと同様
+                example: "OperationId.404.1.1"
+                x-go-name: MessageID
+              createdId:
+                type: string
+                description: 作成した識別子.IDが数値だった時も文字列として渡される.
+                example: 1
+                x-go-name: CreatedID
+            required:
+              - requestId
+              - messageId
+              - createdId
+    Deleted:
+      description: リソース削除時レスポンス
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Deleted
+            properties:
+              requestId:
+                type: string
+                description: リクエスト識別子
+                example: O5g0Av2vOx9Hz7tZ
+                x-go-name: RequestID
+              messageId:
+                type: string
+                description: メッセージ識別子.言語ファイルのキーと同様
+                example: "OperationId.404.1.1"
+                x-go-name: MessageID
+              deletedId:
+                type: string
+                description: 削除した識別番号.IDが数値だった時も文字列として渡される.
+                example: 1
+                x-go-name: DeletedID
+            required:
+              - requestId
+              - messageId
+              - deletedId
+    Updated:
+      description: リソース更新時レスポンス
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Updated
+            properties:
+              requestId:
+                type: string
+                description: リクエスト識別子
+                example: O5g0Av2vOx9Hz7tZ
+                x-go-name: RequestID
+              messageId:
+                type: string
+                description: メッセージ識別子.言語ファイルのキーと同様
+                example: "OperationId.404.1.1"
+                x-go-name: MessageID
+              updatedId:
+                type: string
+                description: 更新した識別番号.IDが数値だった時も文字列として渡される.
+                example: 1
+                x-go-name: UpdatedID
+            required:
+              - requestId
+              - messageId
+              - updatedId
+    BadRequest:
+      description: リクエストやクエリパラメータの値が異常値だった時のレスポンス
+      content:
+        application/json:
+          schema:
+            type: object
+            description: BadRequest
+            properties:
+              requestId:
+                type: string
+                description: リクエスト識別子
+                example: 5WxDuEsDWm1z0eCv
+                x-go-name: RequestID
+              messageId:
+                type: string
+                description: メッセージ識別子.言語ファイルのキーと同様
+                example: "OperationId.404.1.1"
+                x-go-name: MessageID
+              arguments:
+                type: object
+                description: メッセージ引数
+                additionalProperties: true
+            required:
+              - requestId
+              - messageId
+              - arguments
+    NotFound:
+      description: 指定されたリソースが発見できない時のレスポンス
+      content:
+        application/json:
+          schema:
+            type: object
+            description: NotFound
+            properties:
+              requestId:
+                type: string
+                description: リクエスト識別子
+                example: O5g0Av2vOx9Hz7tZ
+                x-go-name: RequestID
+              messageId:
+                type: string
+                description: メッセージ識別子.言語ファイルのキーと同様
+                example: "OperationId.404.1.1"
+                x-go-name: MessageID
+              arguments:
+                type: object
+                description: メッセージ引数
+                additionalProperties: true
+              notFoundId:
+                type: string
+                description: 見つからなかった識別子.IDが数値だった時も文字列として渡される.
+                example: 1
+                x-go-name: NotFoundID
+            required:
+              - requestId
+              - messageId
+              - notFoundId
+              - arguments
+    InternalServerError:
+      description: API内部処理で異常が発生した時のレスポンス
+      content:
+        application/json:
+          schema:
+            type: object
+            description: InternalServerError
+            properties:
+              requestId:
+                type: string
+                description: リクエスト識別子
+                example: O5g0Av2vOx9Hz7tZ
+                x-go-name: RequestID
+              messageId:
+                type: string
+                description: メッセージ識別子.言語ファイルのキーと同様
+                example: "OperationId.404.1.1"
+                x-go-name: MessageID
+              arguments:
+                type: object
+                description: メッセージ引数
+                additionalProperties: true
+            required:
+              - requestId
+              - messageId
+              - arguments
