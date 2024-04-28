@@ -19,6 +19,7 @@ func APIMain(address string) {
 	h := handler.Handler{}
 
 	e := echo.New()
+	e.Use(middleware.CORS())
 	e.Use(middleware.RequestID())
 	if err := h.Initialize(); err != nil {
 		slog.Error("初期化に失敗しました", slog.String("error", err.Error()))
