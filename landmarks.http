@@ -1,1 +1,1 @@
-GET http://localhost:8081/landmarks/a
+GET http://localhost:8081/landmarks/1

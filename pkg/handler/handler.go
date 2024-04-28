@@ -19,7 +19,7 @@ type Handler struct {
 // (GET /landmarks)
 func (h *Handler) GetLandmarks(ctx echo.Context, params openapi.GetLandmarksParams) error {
 	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
-
+	h.Delay()
 	if response, err := database.GetLandmarks(h.db, params.Page, params.PerPage); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, openapi.InternalServerError{
 			RequestID: requestID,
@@ -35,7 +35,7 @@ func (h *Handler) GetLandmarks(ctx echo.Context, params openapi.GetLandmarksPara
 // (POST /landmarks)
 func (h *Handler) PostLandmarks(ctx echo.Context) error {
 	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
-
+	h.Delay()
 	var requestBody openapi.PostLandmarksJSONRequestBody
 	if err := ctx.Bind(&requestBody); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, openapi.BadRequest{
@@ -64,7 +64,7 @@ func (h *Handler) PostLandmarks(ctx echo.Context) error {
 // (POST /landmarks/_search)
 func (h *Handler) PostLandmarksSearch(ctx echo.Context) error {
 	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
-
+	h.Delay()
 	var requestBody openapi.PostLandmarksSearchJSONRequestBody
 	if err := ctx.Bind(&requestBody); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, openapi.BadRequest{
@@ -89,7 +89,7 @@ func (h *Handler) PostLandmarksSearch(ctx echo.Context) error {
 // (DELETE /landmarks/{id})
 func (h *Handler) DeleteLandmarksID(ctx echo.Context, id int) error {
 	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
-
+	h.Delay()
 	if err := database.DeleteLandmark(h.db, id); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, openapi.NotFound{
@@ -118,7 +118,7 @@ func (h *Handler) DeleteLandmarksID(ctx echo.Context, id int) error {
 // (PUT /landmarks/{id})
 func (h *Handler) GetLandmarksID(ctx echo.Context, id int) error {
 	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
-
+	h.Delay()
 	if response, err := database.ReadLandmark(h.db, id); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, openapi.NotFound{
@@ -143,7 +143,7 @@ func (h *Handler) GetLandmarksID(ctx echo.Context, id int) error {
 // (PUT /landmarks/{id})
 func (h *Handler) PutLandmarksID(ctx echo.Context, id int) error {
 	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
-
+	h.Delay()
 	var requestBody openapi.PutLandmarksIDJSONRequestBody
 	if err := ctx.Bind(&requestBody); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, openapi.BadRequest{

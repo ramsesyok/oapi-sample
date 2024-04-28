@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -52,6 +53,10 @@ func initConfig() {
 	}
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err == nil {
+		viper.OnConfigChange(func(e fsnotify.Event) {
+			fmt.Println("設定ファイルが更新されました:", e.Name)
+		})
+		viper.WatchConfig()
 		fmt.Fprintln(os.Stderr, "次の設定ファイルを適用します.", viper.ConfigFileUsed())
 	} else {
 		fmt.Fprintln(os.Stderr, "設定ファイルが見つかりません.", viper.ConfigFileUsed())
