@@ -9,7 +9,10 @@ import (
 // CreateLandmark データベースに地点情報レコードを作成します.
 func CreateLandmark(db *gorm.DB, landmark openapi.PostLandmarksJSONRequestBody) (int, error) {
 	created := db.Create(&landmark)
-	return *landmark.ID, created.Error
+	if created.Error != nil {
+		return -1, created.Error
+	}
+	return *landmark.ID, nil
 }
 
 // ReadLandmark データベースから地点情報レコードの取得します.

@@ -1,1 +1,13 @@
 GET http://localhost:8081/landmarks/1
+
+###
+POST http://localhost:8081/landmarks
+Content-Type: application/json
+
+{
+      "name":"abcdaefg",
+      "description":"hijelfm",
+      "latitude":10,
+      "longitude":20,
+      "altitude":10.0
+    }

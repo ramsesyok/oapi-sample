@@ -2,8 +2,10 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"landmarks/pkg/database"
 	"landmarks/pkg/openapi"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -46,6 +48,8 @@ func (h *Handler) PostLandmarks(ctx echo.Context) error {
 	}
 
 	if id, err := database.CreateLandmark(h.db, requestBody); err != nil {
+		fmt.Print(err.Error())
+		slog.Warn("新しい地点情報の生成に失敗しました.", slog.String("error", err.Error()))
 		return echo.NewHTTPError(http.StatusInternalServerError, openapi.InternalServerError{
 			RequestID: requestID,
 			MessageID: "PostLandmarks.500",
