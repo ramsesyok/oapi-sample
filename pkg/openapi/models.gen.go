@@ -29,7 +29,7 @@ type FilterField struct {
 // FilterFieldType 検索方法
 type FilterFieldType string
 
-// Landmark 地点情報
+// Landmark defines model for Landmark.
 type Landmark struct {
 	// Altitude 高度[m]
 	Altitude float32 `json:"altitude"`
@@ -48,6 +48,24 @@ type Landmark struct {
 
 	// Name 地点名称
 	Name string `gorm:"unique" json:"name"`
+}
+
+// LandmarkProperties LandmarkProperties 地点情報のプロパティ
+type LandmarkProperties struct {
+	// Altitude 高度[m]
+	Altitude *float32 `json:"altitude,omitempty"`
+
+	// Description 地点概要
+	Description *string `json:"description,omitempty"`
+
+	// Latitude 緯度[deg]
+	Latitude *float64 `json:"latitude,omitempty"`
+
+	// Longitude 経度[deg]
+	Longitude *float64 `json:"longitude,omitempty"`
+
+	// Name 地点名称
+	Name *string `gorm:"unique" json:"name,omitempty"`
 }
 
 // Landmarks 地点情報一覧
@@ -177,6 +195,9 @@ type PostLandmarksJSONRequestBody = Landmark
 
 // PostLandmarksSearchJSONRequestBody defines body for PostLandmarksSearch for application/json ContentType.
 type PostLandmarksSearchJSONRequestBody = LocationSearchQuery
+
+// PatchLandmarksIDJSONRequestBody defines body for PatchLandmarksID for application/json ContentType.
+type PatchLandmarksIDJSONRequestBody = LandmarkProperties
 
 // PutLandmarksIDJSONRequestBody defines body for PutLandmarksID for application/json ContentType.
 type PutLandmarksIDJSONRequestBody = Landmark

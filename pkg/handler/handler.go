@@ -179,3 +179,10 @@ func (h *Handler) PutLandmarksID(ctx echo.Context, id int) error {
 		Arguments: map[string]interface{}{"error": nil, "requiredId": id},
 	})
 }
+
+// PatchLandmarksID 指定地点更新 指定された地点データを更新します.
+// (PATCH /landmarks/{id})
+func (h *Handler) PatchLandmarksID(ctx echo.Context, id int) error {
+
+	return ctx.JSON(http.StatusNotImplemented, nil)
+}

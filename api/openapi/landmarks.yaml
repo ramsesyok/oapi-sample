@@ -13,17 +13,17 @@ paths:
         - name: page
           in: query
           description: ページ番号
-          required: true
           schema:
             type: integer
           example: 1
+          required: true
         - name: perPage
           in: query
           description: ページあたりのデータ数
-          required: true
           schema:
             type: integer
           example: 2
+          required: true
       responses:
         '200':
           description: OK
@@ -108,6 +108,25 @@ paths:
           $ref: "#/components/responses/NotFound"
         '500':
           $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: PatchLandmarksID 指定地点部分更新 指定された地点データを更新します.
+      operationId: PatchLandmarksID
+      requestBody:
+        description: 更新する地点情報
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LandmarkProperties"
+        required: true
+      responses:
+        '200':
+          $ref: "#/components/responses/Updated"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
   /landmarks/_search:
     post:
       summary: PostLandmarksSearch 検索条件を指定して検索します.
@@ -133,18 +152,10 @@ paths:
 
 components:
   schemas:
-    Landmark:
+    LandmarkProperties:
       type: object
-      description: 地点情報
+      description: LandmarkProperties 地点情報のプロパティ
       properties:
-        id:
-          type: integer
-          description: 地点識別番号
-          x-go-name: ID
-          x-oapi-codegen-extra-tags:
-            gorm: primarykey
-          example: 1
-          readOnly: true
         name:
           type: string
           description: 地点名称
@@ -170,12 +181,28 @@ components:
           format: float
           description: 高度[m]
           example: 333.0
-      required:
-        - name
-        - description
-        - latitude
-        - longitude
-        - altitude
+    Landmark:
+      type: object
+      description: Landmark 地点情報
+      allOf:
+          - type: object
+            properties:
+              id:
+                type: integer
+                description: 地点識別番号
+                x-go-name: ID
+                x-oapi-codegen-extra-tags:
+                  gorm: primarykey
+                example: 1
+                readOnly: true
+          - $ref: "#/components/schemas/LandmarkProperties"
+          - required:
+            - id
+            - name
+            - description
+            - latitude
+            - longitude
+            - altitude
     Landmarks:
       type: object
       description: 地点情報一覧
