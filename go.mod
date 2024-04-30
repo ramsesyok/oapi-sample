@@ -3,6 +3,7 @@ module landmarks
 go 1.21.5
 
 require (
+	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.124.0
 	github.com/google/go-cmp v0.5.9
 	github.com/labstack/echo/v4 v4.12.0
@@ -18,7 +19,6 @@ require (
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-openapi/jsonpointer v0.20.2 // indirect
 	github.com/go-openapi/swag v0.22.8 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
