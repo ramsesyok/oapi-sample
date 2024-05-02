@@ -22,11 +22,11 @@ type Handler struct {
 func (h *Handler) GetLandmarks(ctx echo.Context, params openapi.GetLandmarksParams) error {
 	requestID := ctx.Response().Header().Get(echo.HeaderXRequestID)
 	h.Delay()
-	if response, err := database.GetLandmarks(h.db, params.Page, params.PerPage); err != nil {
+	if response, err := database.GetLandmarks(h.db, params.Name); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, openapi.InternalServerError{
 			RequestID: requestID,
-			MessageID: "GetLandmarks.500",
-			Arguments: map[string]interface{}{"error": err.Error(), "perPage": params.PerPage, "page": params.Page},
+			MessageID: "GetLandmarks.500.2",
+			Arguments: map[string]interface{}{"error": err.Error()},
 		})
 	} else {
 		return ctx.JSON(http.StatusOK, response)

@@ -11,3 +11,9 @@ Content-Type: application/json
       "longitude":20,
       "altitude":10.0
     }
+
+### インデックス取得（名前フィルタなし）
+GET http://localhost:8081/landmarks
+
+### インデックス取得（名前フィルタ）
+GET http://localhost:8081/landmarks?name=島

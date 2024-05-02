@@ -22,19 +22,31 @@ func paginate(page int, perPage int) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func GetLandmarks(db *gorm.DB, page int, perPage int) (openapi.Landmarks, error) {
+func GetLandmarks(db *gorm.DB, name *string) (openapi.LandmarkIndices, error) {
 
-	landmarks := openapi.Landmarks{
-		Items: []openapi.Landmark{},
+	indices := openapi.LandmarkIndices{
+		Items: []openapi.LandmarkIndex{},
 	}
-	if tx := db.Scopes(paginate(page, perPage)).Find(&landmarks.Items); tx.Error != nil {
-		return landmarks, tx.Error
+	landmarks := []openapi.Landmark{}
+	if name != nil {
+		if tx := db.Where("name LIKE ?", "%"+*name+"%").Find(&landmarks); tx.Error != nil {
+			return indices, tx.Error
+		}
+	} else {
+		if tx := db.Find(&landmarks); tx.Error != nil {
+			return indices, tx.Error
+		}
 	}
-	var total int64
-	_ = db.Find(&[]openapi.Landmark{}).Count(&total)
-	landmarks.Total = int(total)
-	landmarks.Count = len(landmarks.Items)
-	return landmarks, nil
+	indices.Count = len(landmarks)
+
+	for _, record := range landmarks {
+		indices.Items = append(indices.Items, openapi.LandmarkIndex{
+			ID:          *record.ID,
+			Name:        record.Name,
+			Description: record.Description,
+		})
+	}
+	return indices, nil
 }
 
 func SearchLandmarks(db *gorm.DB, condition openapi.PostLandmarksSearchJSONRequestBody) (openapi.Landmarks, error) {

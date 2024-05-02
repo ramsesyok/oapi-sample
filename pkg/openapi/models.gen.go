@@ -50,6 +50,27 @@ type Landmark struct {
 	Name string `gorm:"unique" json:"name"`
 }
 
+// LandmarkIndex LandmarkIndex 地点情報インデックス
+type LandmarkIndex struct {
+	// Description 地点概要
+	Description string `json:"description"`
+
+	// Id 地点識別番号
+	ID int `gorm:"primarykey" json:"id"`
+
+	// Name 地点名称
+	Name string `gorm:"unique" json:"name"`
+}
+
+// LandmarkIndices 地点情報インデックス一覧
+type LandmarkIndices struct {
+	// Count データ数
+	Count int `json:"count"`
+
+	// Items データ一覧
+	Items []LandmarkIndex `json:"items"`
+}
+
 // LandmarkProperties LandmarkProperties 地点情報のプロパティ
 type LandmarkProperties struct {
 	// Altitude 高度[m]
@@ -68,20 +89,8 @@ type LandmarkProperties struct {
 	Name *string `gorm:"unique" json:"name,omitempty"`
 }
 
-// Landmarks 地点情報一覧
-type Landmarks struct {
-	// Count データ数
-	Count int `json:"count"`
-
-	// Items データ一覧
-	Items []Landmark `json:"items"`
-
-	// Total データ総数
-	Total int `json:"total"`
-}
-
-// LocationSearchQuery 地点情報一覧
-type LocationSearchQuery struct {
+// LandmarkSearchQuery 地点情報一覧
+type LandmarkSearchQuery struct {
 	// Filter フィルタ情報
 	Filter *FilterField `json:"filter,omitempty"`
 
@@ -93,6 +102,18 @@ type LocationSearchQuery struct {
 
 	// Sort ソート情報
 	Sort *SortField `json:"sort,omitempty"`
+}
+
+// Landmarks 地点情報一覧
+type Landmarks struct {
+	// Count データ数
+	Count int `json:"count"`
+
+	// Items データ一覧
+	Items []Landmark `json:"items"`
+
+	// Total データ総数
+	Total int `json:"total"`
 }
 
 // SortField ソート情報
@@ -183,18 +204,15 @@ type Updated struct {
 
 // GetLandmarksParams defines parameters for GetLandmarks.
 type GetLandmarksParams struct {
-	// Page ページ番号
-	Page int `form:"page" json:"page"`
-
-	// PerPage ページあたりのデータ数
-	PerPage int `form:"perPage" json:"perPage"`
+	// Name ランドマーク名称
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
 }
 
 // PostLandmarksJSONRequestBody defines body for PostLandmarks for application/json ContentType.
 type PostLandmarksJSONRequestBody = Landmark
 
 // PostLandmarksSearchJSONRequestBody defines body for PostLandmarksSearch for application/json ContentType.
-type PostLandmarksSearchJSONRequestBody = LocationSearchQuery
+type PostLandmarksSearchJSONRequestBody = LandmarkSearchQuery
 
 // PatchLandmarksIDJSONRequestBody defines body for PatchLandmarksID for application/json ContentType.
 type PatchLandmarksIDJSONRequestBody = LandmarkProperties

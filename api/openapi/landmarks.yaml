@@ -7,34 +7,26 @@ servers:
 paths:
   /landmarks:
     get:
-      summary: GetLandmarks 登録地点の一覧を返します.
+      summary: |-
+        GetLandmarks 登録されている登録地点のインデックス一覧を返します.
+        クエリパラメータnameを使って地点名称によるフィルタをかけることができます。(部分一致)
       operationId: GetLandmarks
       parameters:
-        - name: page
+        - name: name
+          description: ランドマーク名称
           in: query
-          description: ページ番号
           schema:
-            type: integer
-          example: 1
-          required: true
-        - name: perPage
-          in: query
-          description: ページあたりのデータ数
-          schema:
-            type: integer
-          example: 2
-          required: true
+            type: string
+          example: 京
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Landmarks"
+                $ref: "#/components/schemas/LandmarkIndices"
         '400':
           $ref: "#/components/responses/BadRequest"
-        '404':
-          $ref: "#/components/responses/NotFound"
         '500':
           $ref: "#/components/responses/InternalServerError"
     post:
@@ -136,7 +128,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LocationSearchQuery"
+              $ref: "#/components/schemas/LandmarkSearchQuery"
         required: true
       responses:
         '200':
@@ -238,7 +230,7 @@ components:
             latitude: 35.689489150649095 
             longitude: 139.69168760538773
             altitude: 243.0
-    LocationSearchQuery:
+    LandmarkSearchQuery:
       type: object
       description: 地点情報一覧
       properties:
@@ -300,6 +292,47 @@ components:
         - field
         - value
         - type
+    LandmarkIndex:
+      type: object
+      description: LandmarkIndex 地点情報インデックス
+      properties:
+        id:
+          type: integer
+          description: 地点識別番号
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            gorm: primarykey
+          example: 1
+        name:
+          type: string
+          description: 地点名称
+          x-oapi-codegen-extra-tags:
+            gorm: unique
+          example: 東京タワー
+        description:
+          type: string
+          description: 地点概要
+          example: 東京都港区芝公園にある総合電波塔で、正式名称は日本電波塔である。
+      required:
+        - id
+        - name
+        - description
+    LandmarkIndices:
+      type: object
+      description: 地点情報インデックス一覧
+      properties:
+        count:
+          type: integer
+          description: データ数
+          example: 1
+        items:
+          type: array
+          description: データ一覧
+          items: 
+            $ref: "#/components/schemas/LandmarkIndex"
+      required:
+        - count
+        - items
   responses:
     Success:
       description: 成功時レスポンス
