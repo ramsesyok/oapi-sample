@@ -189,7 +189,6 @@ components:
                 readOnly: true
           - $ref: "#/components/schemas/LandmarkProperties"
           - required:
-            - id
             - name
             - description
             - latitude
